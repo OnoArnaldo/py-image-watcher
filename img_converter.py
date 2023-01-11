@@ -84,3 +84,18 @@ def convert(config):
                 img.save(new_name)
 
         print(f'         > {new_name.relative_to(config.outbox)!s}')
+
+
+if __name__ == '__main__':
+    config = Config()
+    config.load_env()
+
+    parser = build_arg_parser()
+    args = parser.parse_args()
+
+    if args.config:
+        config.load_file(args.config)
+    else:
+        config.load_args(args)
+
+    convert(config)
