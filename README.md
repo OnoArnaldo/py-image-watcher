@@ -46,3 +46,10 @@ python img_converter.py
 ## No futuro:
 
 * Implementar o watchdog
+
+
+## Build:
+
+```shell
+pyinstaller -F --collect-all PIL img_converter.py
+```
