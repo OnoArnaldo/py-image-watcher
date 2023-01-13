@@ -51,5 +51,5 @@ python img_converter.py
 ## Build:
 
 ```shell
-pyinstaller -F --collect-all PIL img_converter.py
+pyinstaller -F --collect-all PIL --collect-all pillow_heif img_converter.py
 ```
