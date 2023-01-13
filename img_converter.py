@@ -5,9 +5,11 @@ from dataclasses import dataclass
 from os import environ
 from pathlib import Path
 from shutil import move
-from datetime import datetime
 
 from PIL import Image
+from pillow_heif import register_heif_opener
+
+register_heif_opener()
 
 
 @dataclass
@@ -62,6 +64,9 @@ class Config:
         if self.outbox is None or not self.outbox.exists():
             raise Exception(f"Valor '{self.outbox!s}' em 'outbox' não é válido.")
 
+        if self.inbox == self.outbox:
+            raise Exception(f"'inbox' e 'outbox' devem ter valores diferentes.")
+
 
 def build_arg_parser() -> ArgumentParser:
     parser = ArgumentParser()
@@ -75,22 +80,33 @@ def build_arg_parser() -> ArgumentParser:
     return parser
 
 
+def build_file_name(fname: Path, suffix: str = None) -> Path:
+    result = Path(fname).with_suffix(suffix) if suffix is not None else Path(fname)
+
+    i = 1
+    name = result.stem
+    while result.exists():
+        result = result.with_stem(f'{name} ({i})')
+        i += 1
+
+    return result
+
+
 def convert(config):
     print(f'Inbox:  {config.inbox.absolute()!s}')
     print(f'Outbox: {config.outbox.absolute()!s}')
     if config.dry_run:
         print('Dry Run')
 
-    datetime_now = datetime.utcnow().strftime('%y%m%d_%H%M%S')
-    move_original_to = config.outbox.joinpath('_original', datetime_now)
-    save_to = config.outbox.joinpath(datetime_now)
+    move_original_to = config.outbox.joinpath('_original')
+    save_to = config.outbox
 
     for fname in config.inbox.glob('**/*.*'):
         print(f'  Arquivo: {fname.relative_to(config.inbox)!s}')
 
         relative_name = fname.relative_to(config.inbox)
-        new_name = save_to.joinpath(relative_name).with_suffix(config.convert_to)
-        orig_name = move_original_to.joinpath(relative_name)
+        new_name = build_file_name(save_to.joinpath(relative_name), suffix=config.convert_to)
+        orig_name = build_file_name(move_original_to.joinpath(relative_name))
 
         if not config.dry_run:
             if not (new_dir := new_name.parent).exists():
@@ -106,7 +122,7 @@ def convert(config):
                     print(f'         > {new_name.relative_to(config.outbox)!s}')
 
             except Exception as ex:
-                print(f'         > [FAILED]')
+                print(f'         > [FAILED] {ex}')
 
         else:
             print(f'         > {new_name.relative_to(config.outbox)!s}')
