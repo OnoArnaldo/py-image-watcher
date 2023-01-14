@@ -50,6 +50,14 @@ python img_converter.py
 
 ## Build:
 
+Instalar dependências:
+```shell
+pip install --upgrade pip
+pip install Pillow
+pip install pillow_heif
+```
+
+Executar PyInstaller:
 ```shell
 pyinstaller -F --collect-all PIL --collect-all pillow_heif img_converter.py
 ```
