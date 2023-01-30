@@ -7,30 +7,12 @@
 Siga as instruções no site https://www.python.org/downloads/.
 
 
-### Instalar Image Converter
-
-```shell
-python3.11 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install git+https://github.com/OnoArnaldo/py-image-watcher.git
-```
-
-**No windows**
-```shell
-python3.11 -m venv venv
-source venv\script\activate.bat
-pip install --upgrade pip
-pip install git+https://github.com/OnoArnaldo/py-image-watcher.git
-```
-
-
 ## Uso:
 
 ### Básico:
 
 ```shell
-python -m imageconverter --inbox "/diretorio/inbox" --outbox "/diretorio/outbox" --extension ".png"
+python img_converter.py --inbox "/diretorio/inbox" --outbox "/diretorio/outbox" --extension ".png"
 ```
 
 
@@ -47,7 +29,7 @@ IMG_OUTBOX = "/outbox"
 
 Commando:
 ```shell
-python -m imageconverter --config "caminho/arquivo/converter.cfg"
+python img_converter.py --config "caminho/arquivo/converter.cfg"
 ```
 
 
@@ -57,10 +39,25 @@ Defina as variáveis com mesmas chaves disponíveis no arquivo `.cfg`.
 
 Commando:
 ```shell
-python -m imageconverter
+python img_converter.py
 ```
 
 
 ## No futuro:
 
 * Implementar o watchdog
+
+
+## Build:
+
+Instalar dependências:
+```shell
+pip install --upgrade pip
+pip install Pillow
+pip install pillow_heif
+```
+
+Executar PyInstaller:
+```shell
+pyinstaller -F --collect-all PIL --collect-all pillow_heif img_converter.py
+```
