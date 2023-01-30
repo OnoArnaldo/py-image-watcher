@@ -1,0 +1,35 @@
+name: Build and Package
+
+on: [push]
+
+env:
+  PYTHON_VERSION: 3.9
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Package code into .exe
+      run: |
+        pyinstaller -F --collect-all PIL --collect-all pillow_heif img_converter.py
+
+    - name: Upload .exe
+      uses: actions/upload-artifact@v2
+      with:
+        name: img_converter.exe
+        path: dist/img_converter.exe
